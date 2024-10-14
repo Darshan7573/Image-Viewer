@@ -1,7 +1,17 @@
-const ImageCard = () => {
-    return (
-        <div>ImageCard</div>
-    )
-}
+import React from 'react';
 
-export default ImageCard
+const ImageCard = ({ image }) => {
+    return (
+        <div className="border rounded-md overflow-hidden bg-white shadow-md">
+            <div className="overflow-hidden">
+                <img
+                    src={image.urls.small}
+                    alt={`Image ${image.id}`}
+                    className="w-full h-48 object-cover transform transition-transform duration-300 hover:scale-110"
+                />
+            </div>
+        </div>
+    );
+};
+
+export default ImageCard;

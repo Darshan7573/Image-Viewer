@@ -1,9 +1,8 @@
-/* eslint-disable no-unused-vars */
-import React, { useState } from 'react'
-import FileView from './Components/FileView'
-import ClusterView from './Components/ClusterView'
-import axios from 'axios'
-import InfiniteScroll from 'react-infinite-scroll-component'
+import React, { useState, useEffect } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import FileView from './components/FileView';
+import ClusterView from './components/ClusterView';
+import axios from 'axios';
 
 const categoriesList = [
   'car',
@@ -21,17 +20,16 @@ const categoriesList = [
   'travel'
 ];
 
+
 const getCategoryById = (id) => {
   return categoriesList[id % categoriesList.length];
 };
 
-
 const App = () => {
-
-  const [viewMode, setViewMode] = useState('clusterView')
-  const [images, setImages] = useState([])
-  const [filters, setFilters] = useState('')
-  const [hasMore, setHasMore] = useState(true)
+  const [images, setImages] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [viewMode, setViewMode] = useState('clusterView');
+  const [filters, setFilters] = useState('');
 
   const fetchRandomImages = async () => {
     try {
@@ -68,7 +66,6 @@ const App = () => {
     }
   };
 
-
   const loadMoreImages = () => {
     if (viewMode === 'fileView') {
       fetchRandomImages();
@@ -76,7 +73,6 @@ const App = () => {
       categoriesList.forEach((category) => fetchImagesByCategory(category));
     }
   };
-
 
   useEffect(() => {
     if (viewMode === 'fileView') {
@@ -88,6 +84,12 @@ const App = () => {
     }
   }, [viewMode]);
 
+  const filteredImages = images.filter((image) => {
+    if (filters.trim() === '') return true;
+    return image.categories.some((category) =>
+      category.toLowerCase() === filters.trim().toLowerCase()
+    );
+  });
 
   const groupedImages = filteredImages.reduce((acc, image) => {
     image.categories.forEach((category) => {
@@ -100,24 +102,33 @@ const App = () => {
   }, {});
 
   return (
-    <div className='min-h-screen bg-gray-100 p-4'>
-      <h1>Image Gallery</h1>
+    <div className="min-h-screen bg-gray-100 w-full p-4">
+      <h1 className=" bg-gray-800 text-center px-2 py-4 text-white text-3xl  font-bold mb-4">Image Grid Viewer</h1>
 
-      <div className='flex gap-4 mb-6'>
+      <div className="flex gap-4 mb-6">
         <button
           onClick={() => setViewMode('fileView')}
-          className={`px-4 py-2 ${viewMode === 'fileView' ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded-md`}>File View</button>
+          className={`px-4 py-2 ${viewMode === 'fileView' ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded-md`}
+        >
+          File View
+        </button>
         <button
           onClick={() => setViewMode('clusterView')}
-          className={`px-4 py-2 ${viewMode === 'clusterView' ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded-md`}>Cluster View</button>
+          className={`px-4 py-2 ${viewMode === 'clusterView' ? 'bg-blue-500 text-white' : 'bg-gray-300'} rounded-md`}
+        >
+          Cluster View
+        </button>
       </div>
 
-      {viewMode === "clusterView" ? <div>
+      {viewMode === "clusterView" ? <div className="mb-4">
         <input
-          type='text'
-          placeholder='Filter by Category (e.g., car, person)'
+          type="text"
+          placeholder="Filter by category (e.g., car, person)"
+          className="w-full px-4 py-2 border rounded-md"
+          onChange={(e) => setFilters(e.target.value.toLowerCase())}
         />
       </div> : ""}
+
 
       {viewMode === 'fileView' ? (
         <InfiniteScroll
@@ -133,7 +144,7 @@ const App = () => {
         <ClusterView groupedImages={groupedImages} />
       )}
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
